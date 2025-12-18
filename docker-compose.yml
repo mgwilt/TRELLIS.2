@@ -1,0 +1,20 @@
+services:
+  trellis2:
+    build: .
+    ports:
+      - "7860:7860"
+    environment:
+      GRADIO_SERVER_NAME: 0.0.0.0
+      GRADIO_SERVER_PORT: 7860
+      HF_HOME: /root/.cache/huggingface
+      CUDA_HOME: /usr/local/cuda
+      ATTN_BACKEND: flash_attn
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+    runtime: nvidia
+    shm_size: "8g"
+
+volumes:
+  hf_cache:
