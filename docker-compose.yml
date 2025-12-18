@@ -1,6 +1,16 @@
 services:
   trellis2:
-    build: .
+    build:
+      context: .
+      args:
+        # TORCH_CUDA_ARCH_LIST maps NVIDIA GPU generations to compute capabilities:
+        # - A100: 8.0
+        # - 3090/3080: 8.6
+        # - 4090: 8.9
+        # - H100: 9.0
+        # Use a semicolon-separated list to build multiple SMs (e.g., "8.6;9.0").
+        TORCH_CUDA_ARCH_LIST: "8.9"
+        MAX_JOBS: "1"
     ports:
       - "7860:7860"
     environment:
