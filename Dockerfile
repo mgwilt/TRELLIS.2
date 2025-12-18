@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.5
 FROM nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
 
 ARG TORCH_CUDA_ARCH_LIST="8.6"
@@ -41,39 +42,47 @@ RUN if ! command -v nvidia-smi >/dev/null 2>&1; then \
 
 WORKDIR /app
 
-RUN python -m pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
+RUN --mount=type=cache,target=/root/.cache/pip \
+    python -m pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
 
 COPY requirements-docker.txt /tmp/requirements-docker.txt
-RUN python -m pip install -r /tmp/requirements-docker.txt
+RUN --mount=type=cache,target=/root/.cache/pip \
+    python -m pip install -r /tmp/requirements-docker.txt
 
-RUN if [ "${INSTALL_FLASH_ATTN}" = "1" ]; then pip install flash-attn==2.7.3; fi
+RUN --mount=type=cache,target=/root/.cache/pip \
+    if [ "${INSTALL_FLASH_ATTN}" = "1" ]; then pip install flash-attn==2.7.3 --no-build-isolation; fi
 
-RUN if [ "${INSTALL_NVDIFFRAST}" = "1" ]; then \
+RUN --mount=type=cache,target=/root/.cache/pip \
+    if [ "${INSTALL_NVDIFFRAST}" = "1" ]; then \
       mkdir -p /tmp/extensions && \
       git clone -b v0.4.0 https://github.com/NVlabs/nvdiffrast.git /tmp/extensions/nvdiffrast && \
       pip install /tmp/extensions/nvdiffrast --no-build-isolation; \
     fi
 
-RUN if [ "${INSTALL_NVDIFFREC}" = "1" ]; then \
+RUN --mount=type=cache,target=/root/.cache/pip \
+    if [ "${INSTALL_NVDIFFREC}" = "1" ]; then \
       mkdir -p /tmp/extensions && \
       git clone -b renderutils https://github.com/JeffreyXiang/nvdiffrec.git /tmp/extensions/nvdiffrec && \
       pip install /tmp/extensions/nvdiffrec --no-build-isolation; \
     fi
 
-RUN if [ "${INSTALL_CUMESH}" = "1" ]; then \
+RUN --mount=type=cache,target=/root/.cache/pip \
+    if [ "${INSTALL_CUMESH}" = "1" ]; then \
       mkdir -p /tmp/extensions && \
       git clone https://github.com/JeffreyXiang/CuMesh.git /tmp/extensions/CuMesh --recursive && \
       pip install /tmp/extensions/CuMesh --no-build-isolation; \
     fi
 
-RUN if [ "${INSTALL_FLEXGEMM}" = "1" ]; then \
+RUN --mount=type=cache,target=/root/.cache/pip \
+    if [ "${INSTALL_FLEXGEMM}" = "1" ]; then \
       mkdir -p /tmp/extensions && \
       git clone https://github.com/JeffreyXiang/FlexGEMM.git /tmp/extensions/FlexGEMM --recursive && \
       pip install /tmp/extensions/FlexGEMM --no-build-isolation; \
     fi
 
 COPY o-voxel /tmp/o-voxel
-RUN if [ "${INSTALL_OVOXEL}" = "1" ]; then pip install /tmp/o-voxel --no-build-isolation; fi
+RUN --mount=type=cache,target=/root/.cache/pip \
+    if [ "${INSTALL_OVOXEL}" = "1" ]; then pip install /tmp/o-voxel --no-build-isolation; fi
 
 COPY trellis2 /app/trellis2
 COPY app.py example.py /app/
