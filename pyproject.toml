@@ -1,0 +1,62 @@
+[project]
+name = "trellis2"
+version = "0.1.0"
+description = "TRELLIS.2 training and inference"
+readme = "README.md"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+    "torch==2.6.0",
+    "torchvision==0.21.0",
+    "imageio",
+    "imageio-ffmpeg",
+    "tqdm",
+    "easydict",
+    "opencv-python-headless",
+    "ninja",
+    "trimesh",
+    "transformers",
+    "gradio==6.0.1",
+    "tensorboard",
+    "pandas",
+    "lpips",
+    "zstandard",
+    "kornia",
+    "timm",
+    "huggingface_hub",
+    "safetensors",
+    "plyfile",
+    "utils3d",
+]
+
+[dependency-groups]
+data-toolkit = [
+    "open3d",
+    "objaverse",
+    "huggingface_hub",
+    "open_clip_torch",
+]
+
+[tool.uv]
+package = false
+default-groups = []
+
+[tool.uv.sources]
+utils3d = { git = "https://github.com/EasternJournalist/utils3d.git", rev = "9a4eb15e4021b67b12c460c7057d642626897ec8" }
+torch = [
+    { index = "pytorch-cu124", marker = "platform_system == 'Linux'" },
+    { index = "pytorch-cpu", marker = "platform_system == 'Darwin'" },
+]
+torchvision = [
+    { index = "pytorch-cu124", marker = "platform_system == 'Linux'" },
+    { index = "pytorch-cpu", marker = "platform_system == 'Darwin'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

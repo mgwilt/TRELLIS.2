@@ -5,6 +5,7 @@ from torchvision import transforms
 from transformers import DINOv3ViTModel
 import numpy as np
 from PIL import Image
+from ..utils.hf_local import resolve_hf_path
 
 
 class DinoV2FeatureExtractor:
@@ -62,7 +63,8 @@ class DinoV3FeatureExtractor:
     """
     def __init__(self, model_name: str, image_size=512):
         self.model_name = model_name
-        self.model = DINOv3ViTModel.from_pretrained(model_name)
+        model_source = resolve_hf_path(model_name)
+        self.model = DINOv3ViTModel.from_pretrained(model_source)
         self.model.eval()
         self.image_size = image_size
         self.transform = transforms.Compose([

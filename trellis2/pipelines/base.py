@@ -2,6 +2,7 @@ from typing import *
 import torch
 import torch.nn as nn
 from .. import models
+from ..utils.hf_local import resolve_hf_path
 
 
 class Pipeline:
@@ -25,6 +26,7 @@ class Pipeline:
         """
         import os
         import json
+        path = resolve_hf_path(path)
         is_local = os.path.exists(f"{path}/{config_file}")
 
         if is_local:

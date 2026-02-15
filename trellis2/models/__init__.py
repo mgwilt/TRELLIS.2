@@ -1,4 +1,5 @@
 import importlib
+from ..utils.hf_local import resolve_hf_path
 
 __attributes = {
     # Sparse Structure
@@ -47,6 +48,7 @@ def from_pretrained(path: str, **kwargs):
     import os
     import json
     from safetensors.torch import load_file
+    path = resolve_hf_path(path)
     is_local = os.path.exists(f"{path}.json") and os.path.exists(f"{path}.safetensors")
 
     if is_local:

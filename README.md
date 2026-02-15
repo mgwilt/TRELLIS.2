@@ -60,8 +60,8 @@ Data processing is streamlined for instant conversions that are fully **renderin
 - **Hardware**: An NVIDIA GPU with at least 24GB of memory is necessary. The code has been verified on NVIDIA A100 and H100 GPUs.  
 - **Software**:   
   - The [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit-archive) is needed to compile certain packages. Recommended version is 12.4.  
-  - [Conda](https://docs.anaconda.com/miniconda/install/#quick-command-line-install) is recommended for managing dependencies.  
-  - Python version 3.8 or higher is required. 
+  - [uv](https://docs.astral.sh/uv/) is used for environment and dependency management.
+  - Python 3.10 is required. 
 
 ### Installation Steps
 1. Clone the repo:
@@ -70,27 +70,31 @@ Data processing is streamlined for instant conversions that are fully **renderin
     cd TRELLIS.2
     ```
 
-2. Install the dependencies:
+2. Install the dependencies with `uv`:
     
     **Before running the following command there are somethings to note:**
-    - By adding `--new-env`, a new conda environment named `trellis2` will be created. If you want to use an existing conda environment, please remove this flag.
-    - By default the `trellis2` environment will use pytorch 2.6.0 with CUDA 12.4. If you want to use a different version of CUDA, you can remove the `--new-env` flag and manually install the required dependencies. Refer to [PyTorch](https://pytorch.org/get-started/previous-versions/) for the installation command.
+    - By adding `--new-env`, a fresh `.venv` virtual environment will be created with Python 3.10.
+    - By default, Linux installs `torch==2.6.0` and `torchvision==0.21.0` from the CUDA 12.4 PyTorch index.
     - If you have multiple CUDA Toolkit versions installed, `CUDA_HOME` should be set to the correct version before running the command. For example, if you have CUDA Toolkit 12.4 and 13.0 installed, you can run `export CUDA_HOME=/usr/local/cuda-12.4` before running the command.
     - By default, the code uses the `flash-attn` backend for attention. For GPUs do not support `flash-attn` (e.g., NVIDIA V100), you can install `xformers` manually and set the `ATTN_BACKEND` environment variable to `xformers` before running the code. See the [Minimal Example](#minimal-example) for more details.
     - The installation may take a while due to the large number of dependencies. Please be patient. If you encounter any issues, you can try to install the dependencies one by one, specifying one flag at a time.
     - If you encounter any issues during the installation, feel free to open an issue or contact us.
     
-    Create a new conda environment named `trellis2` and install the dependencies:
+    Create `.venv` and install the dependencies:
     ```sh
-    . ./setup.sh --new-env --basic --flash-attn --nvdiffrast --nvdiffrec --cumesh --o-voxel --flexgemm
+    ./setup.sh --new-env --basic --flash-attn --nvdiffrast --nvdiffrec --cumesh --o-voxel --flexgemm
     ```
-    The detailed usage of `setup.sh` can be found by running `. ./setup.sh --help`.
+    Activate the environment:
+    ```sh
+    source .venv/bin/activate
+    ```
+    The detailed usage of `setup.sh` can be found by running `./setup.sh --help`.
     ```sh
     Usage: setup.sh [OPTIONS]
     Options:
         -h, --help              Display this help message
-        --new-env               Create a new conda environment
-        --basic                 Install basic dependencies
+        --new-env               Create a new uv virtual environment (.venv)
+        --basic                 Install base TRELLIS.2 dependencies
         --flash-attn            Install flash-attention
         --cumesh                Install cumesh
         --o-voxel               Install o-voxel
@@ -106,6 +110,16 @@ The pretrained model **TRELLIS.2-4B** is available on Hugging Face. Please refer
 | Model | Parameters | Resolution | Link |
 | :--- | :--- | :--- | :--- |
 | **TRELLIS.2-4B** | 4 Billion | 512³ - 1536³ | [Hugging Face](https://huggingface.co/microsoft/TRELLIS.2-4B) |
+
+To pre-download model dependencies with `uvx hf`:
+```sh
+uvx hf auth login
+./download_models.sh
+```
+By default, models are stored inside this repo at `./models`.
+The app will discover local models from `TRELLIS_MODEL_DIR` (defaults to `./models` in `run_app.sh`).
+Hugging Face hub cache is scoped locally to `./.hf/hub` by the helper scripts.
+Use `./download_models.sh --help` for options such as `--dry-run`, `--revision`, and `--local-dir`.
 
 
 ## 🚀 Usage
@@ -177,7 +191,7 @@ Upon execution, the script generates the following files:
 
 [app.py](app.py) provides a simple web demo for image to 3D asset generation. you can run the demo with the following command:
 ```sh
-python app.py
+./run_app.sh
 ```
 
 Then, you can access the demo at the address shown in the terminal.

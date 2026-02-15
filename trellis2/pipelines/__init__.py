@@ -1,4 +1,5 @@
 import importlib
+from ..utils.hf_local import resolve_hf_path
 
 __attributes = {
     "Trellis2ImageTo3DPipeline": "trellis2_image_to_3d",
@@ -32,6 +33,7 @@ def from_pretrained(path: str):
     """
     import os
     import json
+    path = resolve_hf_path(path)
     is_local = os.path.exists(f"{path}/pipeline.json")
 
     if is_local:

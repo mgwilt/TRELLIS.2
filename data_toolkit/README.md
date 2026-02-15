@@ -7,7 +7,7 @@ This toolkit provides a comprehensive pipeline for preparing 3D datasets, includ
 Initialize the environment and install necessary dependencies:
 
 ```bash
-. ./data_toolkit/setup.sh
+./data_toolkit/setup.sh
 ```
 
 ### Step 2: Initialize Metadata

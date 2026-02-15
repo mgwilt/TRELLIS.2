@@ -3,12 +3,14 @@ from transformers import AutoModelForImageSegmentation
 import torch
 from torchvision import transforms
 from PIL import Image
+from ...utils.hf_local import resolve_hf_path
 
 
 class BiRefNet:
     def __init__(self, model_name: str = "ZhengPeng7/BiRefNet"):
+        model_source = resolve_hf_path(model_name)
         self.model = AutoModelForImageSegmentation.from_pretrained(
-            model_name, trust_remote_code=True
+            model_source, trust_remote_code=True
         )
         self.model.eval()
         self.transform_image = transforms.Compose(
